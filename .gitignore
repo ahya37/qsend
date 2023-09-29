@@ -1,0 +1,8 @@
+.env
+node_modules/
+storage/upload/*
+
+.wwebjs_auth/
+..wwebjs_cache/
+
+app.log.json
