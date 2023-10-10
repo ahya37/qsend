@@ -12,5 +12,5 @@ module.exports = (app) => {
     });
 
     app.post('/api/sender', middleware.verifyToken, controller.create);
-    app.post('/api/sender/sendmessage', middleware.verifyToken, controller.senMessage);
+    app.post('/api/sender/sendmessage', middleware.verifyToken, controller.sendMessage);
 };

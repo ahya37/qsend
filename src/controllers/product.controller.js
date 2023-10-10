@@ -3,33 +3,33 @@ const { getPagination, getPagingData } = require('../services/pagination');
 
 const Product = db.product;
 
-const Image = db.image
+const Image = db.image;
 
 exports.create = (req, res) => {
     if (!req.body.title) {
         res.status(400).json({
             message: 'title must be required!'
-        })
-        return
+        });
+        return;
     }
 
     const product = {
         user_id: req.userId,
         ...req.body
-    }
+    };
 
     Product.create(product).then((result) => {
         res.status(201).json({
             data: result,
             message: 'product create successfully!'
-        })
+        });
     }).catch((err) => {
         res.status(500).json({
             message: err.message
-        })
-    })
+        });
+    });
 
-}
+};
 
 exports.index = (req, res) => {
     const { page, size } = req.query;
@@ -47,13 +47,13 @@ exports.index = (req, res) => {
         res.status(200).json({
            ...response,
             message: 'show all product'
-        })
+        });
     }).catch((err) => {
         res.status(500).json({
             message: err.message
-        })
-    })
-}
+        });
+    });
+};
 
 exports.show = (req, res) => {
     const id = req.params.id;
@@ -64,22 +64,22 @@ exports.show = (req, res) => {
         if (result.user_id !== req.userId) {
             res.status(401).json({
                 message: 'unauthorized data product'
-            })
+            });
 
-            return
+            return;
         }
 
         res.status(200).json({
             data: result,
             message: 'show product'
-        })
+        });
 
     }).catch((err) => {
         res.status(500).json({
             message: err.message
-        })
-    })
-}
+        });
+    });
+};
 
 exports.update = (req, res) => {
     const id = req.params.id;
@@ -89,9 +89,9 @@ exports.update = (req, res) => {
         if (result.user_id !== req.userId) {
             res.status(401).json({
                 message: 'unauthorized data product'
-            })
+            });
 
-            return
+            return;
         }
 
         Product.update(req.body, {
@@ -102,24 +102,24 @@ exports.update = (req, res) => {
             if (num == 1) {
                 res.status(200).json({
                     message: 'product updated successfully'
-                })
+                });
             } else {
                 res.status(400).json({
                     message: `cannot updated product with id ${id}`
-                })
+                });
             }
         }).catch((err) => {
             res.status(500).json({
                 message: err.message
-            })
-        })
+            });
+        });
 
     }).catch((err) => {
         res.status(500).json({
             message: err.message
-        })
-    })
-}
+        });
+    });
+};
 
 exports.delete = (req, res) => {
     const id = req.params.id;
@@ -129,9 +129,9 @@ exports.delete = (req, res) => {
         if (result.user_id !== req.userId) {
             res.status(401).json({
                 message: 'unauthorized data product'
-            })
+            });
 
-            return
+            return;
         }
 
         Product.destroy({
@@ -142,21 +142,21 @@ exports.delete = (req, res) => {
             if (num == 1) {
                 res.status(200).json({
                     message: 'product delete successfully'
-                })
+                });
             } else {
                 res.status(400).json({
                     message: `cannot delete product with id ${id}`
-                })
+                });
             }
         }).catch((err) => {
             res.status(500).json({
                 message: err.message
-            })
-        })
+            });
+        });
 
     }).catch((err) => {
         res.status(500).json({
             message: err.message
-        })
-    })
-}
+        });
+    });
+};

@@ -32,21 +32,22 @@ app.use(
 app.use(express.static('storage'));
 app.use('/img', express.static(__basedir + '/storage/upload'));
 
-const db = require('./models');
+// const db = require('./models');
 // const { logger } = require('./util/logging');
 // const seed = require('./models/seeds')
 
-db.sequelize
-    // .sync({force: true})
-    .sync()
-    .then(() => {
-        // seed.userSeed();
-        // seed.categorySeed();
-        // console.log('database connected')
-    })
-    .catch((err) => {
-        console.error('database connection failed', err.message);
-    });
+
+// db.sequelize
+//     // .sync({force: true})
+//     .sync()
+//     .then(() => {
+//         // seed.userSeed();
+//         // seed.categorySeed();
+//         // console.log('database connected');
+//     })
+//     .catch((err) => {
+//         // console.error('database connection failed', err.message);
+//     });
 
 app.get('/', (req, res) => {
     res.json({
@@ -60,19 +61,14 @@ require('./routes/product.route')(app);
 require('./routes/upload.route')(app);
 require('./routes/ads.route')(app);
 require('./routes/sender.route')(app);
-
+require('./routes/saldo.route')(app);
 // run session wa
 
-
 async function getInitRunSessionWa () {
-    // const res = await initialGenerateQrCode();
-    // console.log('session :', res);
-    // return res;
-    // return initialGenerateQrCode().then(res => {
-    //     return res;
-    // });
+   
     try {
         const results = await initialGenerateQrCode();
+        console.log('results', results);
         return results;
 
     } catch (error) {
@@ -80,17 +76,8 @@ async function getInitRunSessionWa () {
     }
 }
 getInitRunSessionWa();
-// const initRunSessionWa = getInitRunSessionWa();
-// console.log('initRunSessionWa, ', getInitRunSessionWa());
-
-// initRunSessionWa.then(function(result){
-//     console.log('result, ', result);
-// });
-
-
 const PORT = process.env.APP_PORT || 5000;
 
 app.listen(PORT, () => {
     console.log(`server is running on port : ${PORT}`);
-    // logger.info('App Start');
 });

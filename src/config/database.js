@@ -13,7 +13,7 @@ const config = {
         acquire: 30000,
         idle: 10000
     }
-}
+};
 
 const sequelize = new Sequelize(
     config.database,

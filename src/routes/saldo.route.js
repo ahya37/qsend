@@ -1,7 +1,8 @@
 const middleware = require('../middleware');
-const controller = require('../controllers/auth.controller');
+const controller = require('../controllers/saldo.controller');
 
 module.exports = (app) => {
+
     app.use(function(req, res, next){
         res.header(
             'Access-Control-Allow-Headers',
@@ -11,7 +12,5 @@ module.exports = (app) => {
         next();
     });
 
-    app.post('/api/auth/register', middleware.isUserExist, controller.register);
-    app.post('/api/auth/login', controller.login);
-
+    app.post('/api/saldo', middleware.verifyToken, controller.create);
 };

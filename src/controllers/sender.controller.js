@@ -6,6 +6,9 @@ const { sessionExists } = require('../services/runsessionwa.js');
 const { phoneNumberFormatter } = require('../helpers/formatter.js');
 const { logger } = require('../util/logging.js');
 const __basedir = path.resolve();
+const db = require('../models');
+
+const Sender = db.sender;
 
 let sessions = [];
 // set session file
@@ -58,13 +61,18 @@ exports.create = async (req, res) => {
             });
         });
 
-        client.on('authenticated', () => {
+        client.on('authenticated', async () => {
             console.log('AUTHENTICATED');
+            // save whatsapp number to tabel db
+            const setsavePhoneNumber = await savePhoneNumber(req);
+            logger.info(setsavePhoneNumber);
+            
         });
 
         client.on('auth_failure', (msg) => {
             // Fired if session restore was unsuccessful
             console.error('AUTHENTICATION FAILURE', msg);
+           
         });
 
         client.on('ready', async () => {
@@ -78,6 +86,7 @@ exports.create = async (req, res) => {
             // console.log('sessionIndex :', sessionIndex)
             savedSessions[sessionIndex].ready = true;
             await setSessionFile(savedSessions);
+
         });
 
         client.initialize();
@@ -106,7 +115,7 @@ exports.create = async (req, res) => {
     }
 };
 
-exports.senMessage = (req, res) => {
+exports.sendMessage = async (req, res) => {
     try {
         const sender = req.body.sender;
         const number = phoneNumberFormatter(req.body.number);
@@ -120,28 +129,42 @@ exports.senMessage = (req, res) => {
         }
         // const client = sessions.find(sess => sess.id == sender).client;
         console.log('sessions', waClient);
-        logger.info('waClient');
+        // logger.info(waClient);
 
-        // let responses = {};
-        // waClient
-        //     .sendMessage(number, message)
-        //     .then((response) => {
-        //         responses.results = response._data.results;
-        //         res.status(200).json({
-        //             data: responses,
-        //         });
-        //     })
-        //     .catch((error) => {
-        //         console.log('error: ', error);
-        //         responses.data = error;
-        //         res.status(500).json({
-        //             data: responses,
-        //             message: 'Gagal mengirim pesan!',
-        //         });
-        //     });
+        await waClient
+            .sendMessage(number, message)
+            .then((response) => {
+                res.status(200).json({
+                    data: response,
+                });
+            })
+            .catch((error) => {
+                console.log('error: ', error);
+                logger.info(error);
+                res.status(500).json({
+                    data: error,
+                    message: 'Gagal mengirim pesan!',
+                });
+            });
     } catch (error) {
         res.status(500).json({
             data: error,
         });
     }
+};
+
+const savePhoneNumber = (req) => {
+    return new Promise((resolve, reject) => {
+        const senderData = {
+            user_id: req.userId,
+            createdBy: req.userId,
+            phoneNumber: req.body.whatsappId,
+        };
+    
+        Sender.create(senderData).then((result) => {
+            resolve(result);
+        }).catch((err) => {
+            reject(err);
+        });
+    });
 };
